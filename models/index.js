@@ -9,7 +9,7 @@ const sequelize = new Sequelize(
     host: dbConfig.HOST,
     dialect: dbConfig.dialect,
     port: dbConfig.PORT,
-    logging: false
+    logging: false,
   }
 );
 
@@ -18,5 +18,13 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.user = require("./user.model")(sequelize, Sequelize);
+db.project = require("./project.model")(sequelize, Sequelize);
+
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
+
 
 module.exports = db;

@@ -1,26 +1,34 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define("user", {
     name: {
       type: DataTypes.STRING,
-      unique: false,
-      allowNull: false
+      allowNull: false,
     },
     email: {
       type: DataTypes.STRING,
       unique: true,
-      allowNull: false
+      allowNull: false,
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false
-    }
+      allowNull: false,
+    },
   });
 
   User.beforeCreate(async (user) => {
-    user.password = await bcrypt.hash(user.password, 10);
+    if (user.password !== "google_oauth") {
+      user.password = await bcrypt.hash(user.password, 10);
+    }
   });
+
+  User.associate = (models) => {
+    User.hasMany(models.project, {
+      foreignKey: "userId",
+      as: "projects",
+    });
+  };
 
   return User;
 };
