@@ -59,3 +59,54 @@ exports.loadAllProjectByUser = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.removeProject = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+
+    const project = await db.project.findByPk(projectId);
+    if (!project) return res.status(404).json({ error: "Projet non trouvé" });
+
+    await project.destroy();
+
+    res.json({ message: "Projet supprimé avec succès" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.duplicateProject = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+
+    const original = await db.project.findByPk(projectId);
+    if (!original) return res.status(404).json({ error: "Projet original introuvable" });
+
+    const duplicate = await db.project.create({
+      name: `${original.name} (copie)`,
+      userId: original.userId,
+      canvasItems: original.canvasItems,
+    });
+
+    res.status(201).json(duplicate);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.updateProjectName = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const { name } = req.body;
+
+    const project = await db.project.findByPk(projectId);
+    if (!project) return res.status(404).json({ error: "Projet introuvable" });
+
+    project.name = name;
+    await project.save();
+
+    res.json({ message: "Nom du projet mis à jour", project });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
