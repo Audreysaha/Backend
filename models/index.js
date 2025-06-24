@@ -19,6 +19,7 @@ db.sequelize = sequelize;
 
 db.user = require("./user.model")(sequelize, Sequelize);
 db.project = require("./project.model")(sequelize, Sequelize);
+db.page = require("./page.model")(sequelize, Sequelize);
 
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {

@@ -4,17 +4,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    canvasItems: {
-      type: DataTypes.JSONB,
-      allowNull: false,
-      defaultValue: [],
-    },
   });
 
   Project.associate = (models) => {
     Project.belongsTo(models.user, {
       foreignKey: "userId",
-      as: "user",
+      as: "owner", // alias différent de "user"
+      onDelete: "CASCADE",
+    });
+
+    Project.hasMany(models.page, {
+      foreignKey: "projectId",
+      as: "pages",
       onDelete: "CASCADE",
     });
   };
