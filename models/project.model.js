@@ -5,19 +5,20 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // description: {
-    //   type: DataTypes.TEXT,
-    // },
-    // status: {
-    //   type: DataTypes.ENUM('active', 'completed', 'pending'),
-    //   defaultValue: 'active'
-    // },
   });
 
   Project.associate = (models) => {
     Project.belongsTo(models.user, {
       foreignKey: "userId",
       as: "user",
+      as: "owner", // alias différent de "user"
+      onDelete: "CASCADE",
+    });
+
+    Project.hasMany(models.page, {
+      foreignKey: "projectId",
+      as: "pages",
+      onDelete: "CASCADE",
     });
   };
 
