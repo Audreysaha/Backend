@@ -5,6 +5,7 @@ const cors = require("cors");
 const db = require("./models");
 const authRoutes = require("./routes/auth.routes");
 const projectRoutes = require("./routes/project.routes");
+const userRoutes = require("./routes/user.routes");
 require("dotenv").config();
 // require("./auth/passport"); // Import config Passport
 
@@ -28,6 +29,7 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/project", projectRoutes)
+app.use("/api/users", userRoutes);
 
 // Lancement du serveur
 const PORT = process.env.PORT || 4000;
