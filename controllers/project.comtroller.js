@@ -177,3 +177,21 @@ exports.addPageToProject = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.renamePage = async (req, res) => {
+  try {
+    const { pageId } = req.params;
+    const { name } = req.body;
+
+    const page = await db.page.findByPk(pageId);
+    if (!page) return res.status(404).json({ error: "Page non trouvée" });
+
+    page.name = name;
+    await page.save();
+
+    res.json({ message: "Page renommée avec succès", page });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+

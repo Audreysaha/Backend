@@ -1,5 +1,5 @@
 const express = require("express");
-const { load, save, loadAllProjectByUser, update, removeProject, duplicateProject, updateProjectName, addPageToProject } = require("../controllers/project.comtroller");
+const { load, save, loadAllProjectByUser, update, removeProject, duplicateProject, updateProjectName, addPageToProject, renamePage } = require("../controllers/project.comtroller");
 const router = express.Router();
 
 router.post("/save", save);
@@ -10,5 +10,6 @@ router.delete("/remove/:id", removeProject);
 router.post("/duplicate/:id", duplicateProject);
 router.put("/:id/projects", updateProjectName);
 router.post("/:projectId/pages", addPageToProject);
+router.put("/pages/:pageId/rename", renamePage);
 
 module.exports = router;
