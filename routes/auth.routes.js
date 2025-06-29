@@ -9,6 +9,9 @@ router.post("/register", authController.register);
 router.post("/login", authController.login);
 router.get("/profile", authMiddleware, authController.profile);
 
+router.post("/forgot-password", authController.forgotPassword);
+router.post("/reset-password", authController.resetPassword);
+
 router.post("/auth/register", adminAuthController.register);
 router.post("/auth/login", adminAuthController.login);
 router.get("/me", adminAuthController.getProfile);
