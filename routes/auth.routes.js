@@ -3,10 +3,15 @@ const router = express.Router();
 const passport = require("passport");
 const authController = require("../controllers/auth.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
+const adminAuthController = require("../controllers/adminAuth.controller");
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
 router.get("/profile", authMiddleware, authController.profile);
+
+router.post("/auth/register", adminAuthController.register);
+router.post("/auth/login", adminAuthController.login);
+router.get("/me", adminAuthController.getProfile);
 
 router.get("/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
