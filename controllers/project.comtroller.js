@@ -195,3 +195,21 @@ exports.renamePage = async (req, res) => {
   }
 };
 
+exports.deletePage = async (req, res) => {
+  try {
+    const { pageId } = req.params;
+
+    const deletedCount = await db.page.destroy({
+      where: { id: pageId },
+    });
+
+    if (deletedCount === 0) {
+      return res.status(404).json({ error: "Page non trouvée" });
+    }
+
+    res.json({ message: "Page supprimée avec succès" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
