@@ -14,6 +14,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: [],
     },
+    url: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "URL de déploiement Vercel"
+    },
+    deploymentId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "ID du déploiement Vercel"
+    },
   });
 
   Page.associate = (models) => {

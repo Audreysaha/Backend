@@ -1,4 +1,11 @@
 const db = require("../models");
+const axios = require("axios");
+const crypto = require("crypto");
+const { page: Page } = require('../models'); // Ajustez le chemin selon votre structure
+
+const VERCEL_TOKEN = process.env.VERCEL_TOKEN;
+// const PROJECT_ID = process.env.VERCEL_PROJECT_ID;
+const TEAM_ID = process.env.VERCEL_TEAM_ID || null;
 
 exports.save = async (req, res) => {
   try {
@@ -36,7 +43,8 @@ exports.load = async (req, res) => {
       include: [{ model: db.page, as: "pages" }],
     });
 
-    if (!project) return res.status(404).json({ message: "Projet introuvable" });
+    if (!project)
+      return res.status(404).json({ message: "Projet introuvable" });
     res.json(project);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -76,11 +84,13 @@ exports.update = async (req, res) => {
 exports.loadAllProjectByUser = async (req, res) => {
   try {
     const user = await db.user.findByPk(req.params.id, {
-      include: [{
-        model: db.project,
-        as: "projects",
-        include: [{ model: db.page, as: "pages" }],
-      }],
+      include: [
+        {
+          model: db.project,
+          as: "projects",
+          include: [{ model: db.page, as: "pages" }],
+        },
+      ],
     });
 
     if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
@@ -114,7 +124,8 @@ exports.duplicateProject = async (req, res) => {
       include: [{ model: db.page, as: "pages" }],
     });
 
-    if (!original) return res.status(404).json({ error: "Projet original introuvable" });
+    if (!original)
+      return res.status(404).json({ error: "Projet original introuvable" });
 
     const duplicate = await db.project.create({
       name: `${original.name} (copie)`,
@@ -213,3 +224,89 @@ exports.deletePage = async (req, res) => {
   }
 };
 
+
+exports.deployDesign = async (req, res) => {
+  const { html, css, name, pageId } = req.body; // Ajout de pageId
+  
+  if (!html || !css || !name) {
+    return res
+      .status(400)
+      .json({ success: false, error: "Missing required fields." });
+  }
+
+  if (!pageId) {
+    return res
+      .status(400)
+      .json({ success: false, error: "Page ID is required to save deployment info." });
+  }
+
+  try {
+    // 1. Vérifier que la page existe
+    const page = await Page.findByPk(pageId);
+    if (!page) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Page not found." });
+    }
+
+    // 2. Déploiement sur Vercel
+    const deploymentRes = await axios.post(
+      "https://api.vercel.com/v6/deployments",
+      {
+        name,
+        files: [
+          {
+            file: "index.html",
+            data: html
+          },
+          {
+            file: "style.css", 
+            data: css
+          }
+        ]
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.VERCEL_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        params: process.env.VERCEL_TEAM_ID
+          ? { teamId: process.env.VERCEL_TEAM_ID }
+          : {},
+      }
+    );
+
+    const deployment = deploymentRes.data;
+    const deploymentUrl = `https://${deployment.url}`;
+
+    // 3. Sauvegarder les informations de déploiement dans la base de données
+    await page.update({
+      url: deploymentUrl,
+      deploymentId: deployment.id
+    });
+
+    // 4. Retourner la réponse de succès
+    res.status(200).json({
+      success: true,
+      url: deploymentUrl,
+      deploymentId: deployment.id,
+      message: "Page deployed and saved successfully."
+    });
+
+  } catch (err) {
+    console.error("Deployment error:", err.response?.data || err.message);
+    
+    // En cas d'erreur, vérifier si c'est une erreur de déploiement ou de base de données
+    if (err.name === 'SequelizeError') {
+      return res.status(500).json({ 
+        success: false, 
+        error: "Database error while saving deployment info: " + err.message 
+      });
+    }
+    
+    res.status(500).json({ 
+      success: false, 
+      error: err.response?.data?.error?.message || err.message 
+    });
+  }
+};
