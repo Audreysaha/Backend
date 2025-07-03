@@ -7,7 +7,7 @@ const authRoutes = require("./routes/auth.routes");
 const projectRoutes = require("./routes/project.routes");
 const userRoutes = require("./routes/user.routes");
 const adminAuthRoutes = require("./routes/auth.routes");
-const { OpenAI } = require('openai')
+const templateRoutes = require("./routes/template.routes");
 require("dotenv").config();
 // require("./auth/passport"); // Import config Passport
 
@@ -51,10 +51,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/project", projectRoutes)
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminAuthRoutes);
-
-app.use('/api/ia', () => {
-
-})
 
 // Lancement du serveur
 const PORT = process.env.PORT || 4000;

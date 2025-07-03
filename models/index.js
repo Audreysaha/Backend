@@ -21,6 +21,8 @@ db.user = require("./user.model")(sequelize, Sequelize);
 db.project = require("./project.model")(sequelize, Sequelize);
 db.page = require("./page.model")(sequelize, Sequelize);
 db.admin = require("./admin.model")(sequelize, Sequelize);
+db.template = require("./template.model")(sequelize, Sequelize);
+
 
 
 Object.keys(db).forEach((modelName) => {
