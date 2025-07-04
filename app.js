@@ -7,8 +7,10 @@ const authRoutes = require("./routes/auth.routes");
 const projectRoutes = require("./routes/project.routes");
 const userRoutes = require("./routes/user.routes");
 const adminAuthRoutes = require("./routes/auth.routes");
-const templateRoutes = require("./routes/template.routes");
+const template = require('./routes/template.routes')
+const { OpenAI } = require('openai')
 require("dotenv").config();
+const axios = require('axios')
 // require("./auth/passport"); // Import config Passport
 
 const app = express();
@@ -22,16 +24,19 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 app.post('/api/chat', async (req, res) => {
+  const { message } = req.body
+
   try {
-    const { message } = req.body
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      message
+    const response = await axios.post('https://mon-api-landing-page.onrender.com/generate-landing-page', {
+      // model: 'gemma3',
+      prompt: message,
+      // stream: false
     })
-    res.json({ reply: completion.choices[0].message.content})
+    const reply = response.data
+    res.json({ reply })
   } catch (error) {
     console.error('erreur OPENAI', error)
-    res.status(500).json({error: 'response generation failedcd B  '})
+    res.status(500).json({error: 'response generation failedcd B'})
   }
 })
 
@@ -51,6 +56,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/project", projectRoutes)
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminAuthRoutes);
+app.use('/api/templates', template)
+
+app.use('/api/ia', () => {
+
+})
 
 // Lancement du serveur
 const PORT = process.env.PORT || 4000;

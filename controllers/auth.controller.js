@@ -64,8 +64,11 @@ exports.forgotPassword = async (req, res) => {
       port: 587,
       auth: {
         user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        pass: process.env.MAIL_PASS,   
       },
+      tls: {
+        rejectUnauthorized: false,
+      },
     });
 
     const mailOptions = {
