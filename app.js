@@ -8,37 +8,37 @@ const projectRoutes = require("./routes/project.routes");
 const userRoutes = require("./routes/user.routes");
 const adminAuthRoutes = require("./routes/auth.routes");
 const template = require('./routes/template.routes')
-const { OpenAI } = require('openai')
+// const { OpenAI } = require('openai')
 require("dotenv").config();
 const axios = require('axios')
 // require("./auth/passport"); // Import config Passport
 
 const app = express();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY,
+// })
 
 // Middleware
 app.use(cors({ origin: true, credentials: true }));
-app.use(express.json());
+app.use(express.json({ limit: '100mb' }));
 
-app.post('/api/chat', async (req, res) => {
-  const { message } = req.body
+// app.post('/api/chat', async (req, res) => {
+//   const { message } = req.body
 
-  try {
-    const response = await axios.post('https://mon-api-landing-page.onrender.com/generate-landing-page', {
-      // model: 'gemma3',
-      prompt: message,
-      // stream: false
-    })
-    const reply = response.data
-    res.json({ reply })
-  } catch (error) {
-    console.error('erreur OPENAI', error)
-    res.status(500).json({error: 'response generation failedcd B'})
-  }
-})
+//   try {
+//     const response = await axios.post('https://mon-api-landing-page.onrender.com/generate-landing-page', {
+//       // model: 'gemma3',
+//       prompt: message,
+//       // stream: false
+//     })
+//     const reply = response.data
+//     res.json({ reply })
+//   } catch (error) {
+//     console.error('erreur OPENAI', error)
+//     res.status(500).json({error: 'response generation failedcd B'})
+//   }
+// })
 
 // Session pour Passport
 // app.use(session({
