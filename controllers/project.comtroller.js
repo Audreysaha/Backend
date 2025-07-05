@@ -226,7 +226,7 @@ exports.deletePage = async (req, res) => {
 
 
 exports.deployDesign = async (req, res) => {
-  const { html, css, name, pageId } = req.body; // Ajout de pageId
+  const { html, css, name, pageId } = req.body;
   
   if (!html || !css || !name) {
     return res

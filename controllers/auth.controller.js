@@ -68,11 +68,11 @@ exports.forgotPassword = async (req, res) => {
       },
       tls: {
         rejectUnauthorized: false,
-      },
+      },
     });
 
     const mailOptions = {
-      from: '"Sourcing Support" <support@genbuilder.com>',
+      from: '"Genbuilder Support" <support@genbuilder.com>',
       to: user.email,
       subject: "Password Reset",
       html: `
